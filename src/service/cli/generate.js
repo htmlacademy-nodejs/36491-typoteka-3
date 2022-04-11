@@ -1,56 +1,74 @@
 'use strict';
+
 const fs = require(`fs`).promises;
+const dayjs = require(`dayjs`);
+const dayjsRandom = require(`dayjs-random`);
+const {ExitCode} = require(`../../consts`);
 const {
   getRandomInt,
   shuffle,
 } = require(`../../utils`);
 
+dayjs.extend(dayjsRandom);
+
 const FILE_NAME = `mocks.json`;
 const DEFAULT_COUNT = 1;
+const MAX_COUNT = 1000;
 const TITLES = [
-  `Продам книги Стивена Кинга`,
-  `Продам новую приставку Sony Playstation 5`,
-  `Продам отличную подборку фильмов на VHS`,
-  `Куплю антиквариат`,
-  `Куплю породистого кота`,
+  `Ёлки. История деревьев`,
+  `Как перестать беспокоиться и начать жить`,
+  `Как достигнуть успеха не вставая с кресла`,
+  `Обзор новейшего смартфона`,
+  `Лучшие рок-музыканты 20-века`,
+  `Как начать программировать`,
+  `Учим HTML и CSS`,
+  `Что такое золотое сечение`,
+  `Как собрать камни бесконечности`,
+  `Борьба с прокрастинацией`,
+  `Рок — это протест`,
+  `Самый лучший музыкальный альбом этого года`,
 ];
 const SENTENCES = [
-  `Товар в отличном состоянии.`,
-  `Пользовались бережно и только по большим праздникам.`,
-  `Продаю с болью в сердце...`,
-  `Бонусом отдам все аксессуары.`,
-  `Даю недельную гарантию.`,
-  `Если товар не понравится — верну всё до последней копейки.`,
-  `Это настоящая находка для коллекционера!`,
-  `Если найдёте дешевле — сброшу цену.`,
-  `Таких предложений больше нет!`,
-  `При покупке с меня бесплатная доставка в черте города.`,
+  `Ёлки — это не просто красивое дерево. Это прочная древесина.`,
+  `Первая большая ёлка была установлена только в 1938 году.`,
+  `Вы можете достичь всего. Стоит только немного постараться и запастись книгами.`,
+  `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
+  `Золотое сечение — соотношение двух величин, гармоническая пропорция.`,
+  `Собрать камни бесконечности легко, если вы прирожденный герой.`,
+  `Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике.`,
+  `Бороться с прокрастинацией несложно. Просто действуйте. Маленькими шагами.`,
+  `Программировать не настолько сложно, как об этом говорят.`,
+  `Простые ежедневные упражнения помогут достичь успеха.`,
+  `Это один из лучших рок-музыкантов.`,
+  `Он написал больше 30 хитов.`,
+  `Из под его пера вышло 8 платиновых альбомов.`,
+  `Процессор заслуживает особого внимания. Он обязательно понравится геймерам со стажем.`,
+  `Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле?`,
+  `Достичь успеха помогут ежедневные повторения.`,
+  `Помните, небольшое количество ежедневных упражнений лучше, чем один раз, но много.`,
+  `Как начать действовать? Для начала просто соберитесь.`,
+  `Игры и программирование разные вещи. Не стоит идти в программисты, если вам нравятся только игры.`,
+  `Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать.`,
 ];
 const CATEGORIES = [
-  `Книги`,
+  `Деревья`,
+  `За жизнь`,
+  `Без рамки`,
   `Разное`,
-  `Посуда`,
-  `Игры`,
-  `Животные`,
-  `Журналы`,
+  `IT`,
+  `Музыка`,
+  `Кино`,
+  `Программирование`,
+  `Железо`,
 ];
-
-const OfferType = {
-  OFFER: `offer`,
-  SALE: `sale`,
-};
-const SumRestrict = {
-  MIN: 1000,
-  MAX: 100000,
-};
 
 const generateOffers = (count) => (
   Array(count).fill({}).map(() => ({
-    category: [CATEGORIES[getRandomInt(0, CATEGORIES.length - 1)]],
-    description: shuffle(SENTENCES).slice(1, 5).join(` `),
     title: TITLES[getRandomInt(0, TITLES.length - 1)],
-    type: OfferType[Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)]],
-    sum: getRandomInt(SumRestrict.MIN, SumRestrict.MAX),
+    createdDate: dayjs.between(dayjs().subtract(3, `month`), dayjs()).format(`YYYY-MM-DD hh:mm:ss`),
+    announce: shuffle(SENTENCES).slice(1, 5).join(` `),
+    fullText: shuffle(SENTENCES).slice(1, getRandomInt(1, SENTENCES.length - 1)).join(` `),
+    category: [CATEGORIES[getRandomInt(0, CATEGORIES.length - 1)]],
   }))
 );
 
@@ -59,13 +77,17 @@ module.exports = {
   async run(args) {
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
-    const content = JSON.stringify(generateOffers(countOffer));
 
-    try {
-      await fs.writeFile(FILE_NAME, content)
-      console.info(`Operation success. File created.`);
-    } catch (err) {
-      console.error(`Can't write data to file...`);
+    if (countOffer <= MAX_COUNT) {
+      const content = JSON.stringify(generateOffers(countOffer));
+      try {
+        await fs.writeFile(FILE_NAME, content);
+      } catch (err) {
+        process.exit(ExitCode.error);
+      }
+    } else {
+      console.info(`Не больше 1000 публикаций`);
+      process.exit(ExitCode.error);
     }
   }
 };
