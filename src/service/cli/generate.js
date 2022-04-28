@@ -1,5 +1,6 @@
 'use strict';
 
+const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
 const dayjs = require(`dayjs`);
 const dayjsRandom = require(`dayjs-random`);
@@ -82,11 +83,13 @@ module.exports = {
       const content = JSON.stringify(generateOffers(countOffer));
       try {
         await fs.writeFile(FILE_NAME, content);
+        console.info(chalk.green(`Operation success. File created.`));
       } catch (err) {
+        console.info(chalk.red(`Can't write data to file...`));
         process.exit(ExitCode.error);
       }
     } else {
-      console.info(`Не больше 1000 публикаций`);
+      console.info(chalk.red(`Не больше 1000 публикаций`));
       process.exit(ExitCode.error);
     }
   }
