@@ -2,6 +2,6 @@ const {Router} = require(`express`);
 
 const mainRoutes = new Router();
 
-mainRoutes.get(`/`, (req, res) => res.send(`/`));
+mainRoutes.get(`/`, (req, res) => res.render(`main`));
 
 module.exports = mainRoutes;
