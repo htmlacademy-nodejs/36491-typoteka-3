@@ -5,24 +5,13 @@ const fs = require(`fs`).promises;
 const dayjs = require(`dayjs`);
 const {nanoid} = require(`nanoid`);
 const dayjsRandom = require(`dayjs-random`);
-const {ExitCode} = require(`../../consts`);
+const {ExitCode, FilePath, MAX_ID_LENGTH, MAX_COMMENTS, DEFAULT_COUNT, MAX_COUNT, FILE_NAME} = require(`../../consts`);
 const {
   getRandomInt,
   shuffle,
 } = require(`../../utils`);
 
 dayjs.extend(dayjsRandom);
-
-const FILE_NAME = `mocks.json`;
-const DEFAULT_COUNT = 1;
-const MAX_COUNT = 1000;
-const MAX_ID_LENGTH = 6;
-const MAX_COMMENTS = 4;
-
-const FILE_SENTENCES_PATH = `./src/data/sentences.txt`;
-const FILE_TITLES_PATH = `./src/data/titles.txt`;
-const FILE_CATEGORIES_PATH = `./src/data/categories.txt`;
-const FILE_COMMENTS_PATH = `./src/data/comments.txt`;
 
 const readContent = async (filePath) => {
   try {
@@ -41,7 +30,7 @@ const generateComments = (count, comments) => (
       .join(` `),
   }))
 );
-const generateOffers = (count, titles, categories, sentences, comments) => (
+const generateArticles = (count, titles, categories, sentences, comments) => (
   Array(count).fill({}).map(() => ({
     title: titles[getRandomInt(0, titles.length - 1)],
     createdDate: dayjs.between(dayjs().subtract(3, `month`), dayjs()).format(`YYYY-MM-DD hh:mm:ss`),
@@ -56,16 +45,16 @@ const generateOffers = (count, titles, categories, sentences, comments) => (
 module.exports = {
   name: `--generate`,
   async run(args) {
-    const sentences = await readContent(FILE_SENTENCES_PATH);
-    const titles = await readContent(FILE_TITLES_PATH);
-    const categories = await readContent(FILE_CATEGORIES_PATH);
-    const comments = await readContent(FILE_COMMENTS_PATH);
+    const sentences = await readContent(FilePath.SENTENCES);
+    const titles = await readContent(FilePath.TITLES);
+    const categories = await readContent(FilePath.CATEGORIES);
+    const comments = await readContent(FilePath.COMMENTS);
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
 
     if (countOffer <= MAX_COUNT) {
       try {
-        const content = JSON.stringify(generateOffers(countOffer, titles, categories, sentences, comments));
+        const content = JSON.stringify(generateArticles(countOffer, titles, categories, sentences, comments));
         await fs.writeFile(FILE_NAME, content);
         console.info(chalk.green(`Operation success. File created.`));
       } catch (err) {
