@@ -1,4 +1,6 @@
-[
+'use strict';
+
+const mockData = [
   {
     "title": "Обзор новейшего смартфона",
     "createdDate": "2022-06-04 12:12:59",
@@ -96,3 +98,5 @@
     ]
   }
 ]
+
+module.exports = {mockData};

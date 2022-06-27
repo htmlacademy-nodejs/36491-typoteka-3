@@ -1,10 +1,10 @@
 'use strict';
 
 const {Router} = require(`express`);
-const {HttpCode} = require(`../../consts`);
-const {articleValidator} = require(`../middlewares/articleValidator`);
-const {articleExist} = require(`../middlewares/articleExist`);
-const {commentValidator} = require(`../middlewares/commentValidator`);
+const {HttpCode} = require(`../../../consts`);
+const {articleValidator} = require(`../../middlewares/articleValidator`);
+const {articleExist} = require(`../../middlewares/articleExist`);
+const {commentValidator} = require(`../../middlewares/commentValidator`);
 
 const route = new Router();
 
@@ -31,17 +31,17 @@ module.exports = (app, articleService, commentsService) => {
 
   route.put(`/:articleId`, [articleExist(articleService), articleValidator], (req, res) => {
     const {articleId} = req.params;
+    const updatedArticle = articleService.update(articleId, req.body);
 
-    articleService.update(articleId, req.body);
-
-    return res.status(HttpCode.NO_CONTENT);
+    return res.status(HttpCode.OK).json(updatedArticle);
   });
 
   route.delete(`/:articleId`, articleExist(articleService), (req, res) => {
     const {articleId} = req.params;
 
-    articleService.drop(articleId);
-    return res.status(HttpCode.NO_CONTENT);
+    const deletedArticle = articleService.drop(articleId);
+
+    return res.status(HttpCode.OK).send(deletedArticle);
   });
 
   route.get(`/:articleId/comments`, articleExist(articleService), async (req, res) => {
