@@ -1,3 +1,5 @@
+'use strict';
+
 const express = require(`express`);
 const request = require(`supertest`);
 
@@ -22,8 +24,6 @@ describe(`API returns category list`, () => {
   test(`Returns list of 3 categories`, () => expect(response.body.length).toBe(4));
 
   test(`Category names are 'Программирование', 'За жизнь', 'IT', 'Без рамки'`,
-    () => expect(response.body).toEqual(
-      expect.arrayContaining(['Программирование', 'За жизнь', 'IT', 'Без рамки'])
-    )
+      () => expect(response.body).toEqual(expect.arrayContaining([`Программирование`, `За жизнь`, `IT`, `Без рамки`]))
   );
 });

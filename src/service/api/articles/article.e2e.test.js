@@ -1,3 +1,5 @@
+'use strict';
+
 const express = require(`express`);
 const request = require(`supertest`);
 
@@ -6,7 +8,7 @@ const {ArticlesService} = require(`../../data-service/articles`);
 const {CommentsService} = require(`../../data-service/comments`);
 const {mockData} = require(`./mockData`);
 const {HttpCode} = require(`../../../consts`);
-const cloneDeep = require('lodash.clonedeep');
+const cloneDeep = require(`lodash.clonedeep`);
 
 const createAPI = () => {
   const app = express();
@@ -17,11 +19,10 @@ const createAPI = () => {
 };
 
 describe(`API returns a list of all articles`, () => {
-  const app = createAPI();
-
   let response;
 
   beforeAll(async () => {
+    const app = createAPI();
     response = await request(app)
       .get(`/articles`);
   });
@@ -34,11 +35,10 @@ describe(`API returns a list of all articles`, () => {
 });
 
 describe(`API returns an articles with given id`, () => {
-  const app = createAPI();
-
   let response;
 
   beforeAll(async () => {
+    const app = createAPI();
     response = await request(app)
       .get(`/articles/ERJFu_`);
   });
@@ -56,11 +56,11 @@ describe(`API creates an offer if data is valid`, () => {
     fullText: `TEST Первая большая ёлка была установлена только в 1938 году. Программировать не настолько сложно как об этом говорят.`,
   };
 
-  const app = createAPI();
-
+  let app;
   let response;
 
   beforeAll(async () => {
+    app = createAPI();
     response = await request(app)
       .post(`/articles`)
       .send(newArticle);
@@ -84,15 +84,19 @@ describe(`API refuses to create an article if data is invalid`, () => {
     fullText: `TEST Первая большая ёлка была установлена только в 1938 году. Программировать не настолько сложно как об этом говорят.`,
   };
 
-  const app = createAPI();
+  let app;
+
+  beforeAll(async () => {
+    app = createAPI();
+  });
 
   test(`Without any required property response code is 400`, async () => {
     for (const key of Object.keys(newArticle)) {
-      const badOffer = {...newArticle};
-      delete badOffer[key];
+      const badArticle = {...newArticle};
+      delete badArticle[key];
       await request(app)
         .post(`/articles`)
-        .send(badOffer)
+        .send(badArticle)
         .expect(HttpCode.BAD_REQUEST);
     }
   });
@@ -106,11 +110,11 @@ describe(`API changes existent article`, () => {
     fullText: `TEST Первая большая ёлка была установлена только в 1938 году. Программировать не настолько сложно как об этом говорят.`,
   };
 
-  const app = createAPI();
-
+  let app;
   let response;
 
   beforeAll(async () => {
+    app = createAPI();
     response = await request(app)
       .put(`/articles/ERJFu_`)
       .send(newArticle);
@@ -158,11 +162,11 @@ test(`API returns status code 400 when trying to change an articles with invalid
 });
 
 describe(`API correctly deletes an article`, () => {
-  const app = createAPI();
-
+  let app;
   let response;
 
   beforeAll(async () => {
+    app = createAPI();
     response = await request(app)
       .delete(`/articles/ERJFu_`);
   });
@@ -170,8 +174,7 @@ describe(`API correctly deletes an article`, () => {
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
   test(`Returns deleted article`, () => expect(response.body.id).toBe(`ERJFu_`));
-
-  test(`Offer count is 5 now`, () => request(app)
+  test(`Offer count is 4 now`, () => request(app)
     .get(`/articles`)
     .expect((res) => expect(res.body.length).toBe(4))
   );
@@ -183,4 +186,68 @@ test(`API refuses to delete non-existent article`, () => {
   return request(app)
     .delete(`/articles/NOEXST`)
     .expect(HttpCode.NOT_FOUND);
+});
+
+test(`API refuses to create a comment to non-existent article and returns status code 404`, () => {
+  const app = createAPI();
+
+  return request(app)
+    .post(`/offers/NOEXST/comments`)
+    .send({
+      text: `Неважно`
+    })
+    .expect(HttpCode.NOT_FOUND);
+});
+
+test(`API refuses to delete non-existent comment`, () => {
+  const app = createAPI();
+
+  return request(app)
+    .delete(`/offers/ERJFu_/comments/NOEXST`)
+    .expect(HttpCode.NOT_FOUND);
+});
+
+describe(`API creates a comment if data is valid`, () => {
+  const newComment = {
+    text: `test test test`
+  };
+
+  let app;
+  let response;
+
+  beforeAll(async () => {
+    app = createAPI();
+    response = await request(app)
+      .post(`/articles/ERJFu_/comments`)
+      .send(newComment);
+  });
+
+  test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
+
+  test(`Returns changed comment`, () => expect(response.body).toEqual(expect.objectContaining(newComment)));
+
+  test(`Comments count is changed`, () => request(app)
+    .get(`/articles/ERJFu_/comments`)
+    .expect((res) => expect(res.body.length).toBe(3))
+  );
+});
+
+describe(`API correctly deletes an comment`, () => {
+  let app;
+  let response;
+
+  beforeAll(async () => {
+    app = createAPI();
+    response = await request(app)
+      .delete(`/articles/ERJFu_/comments/pCQI88`);
+  });
+
+  test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.OK));
+
+  test(`Returns deleted comment`, () => expect(response.body.id).toBe(`pCQI88`));
+
+  test(`Comment count is 1 now`, () => request(app)
+    .get(`/articles/ERJFu_/comments`)
+    .expect((res) => expect(res.body.length).toBe(1))
+  );
 });
