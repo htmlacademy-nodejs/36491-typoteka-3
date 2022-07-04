@@ -13,7 +13,7 @@ myRoutes.get(`/`, async (req, res) => {
 
 myRoutes.get(`/categories`, async (req, res) => {
   const categories = await api.getCategories();
-  res.render(`all-categories`, {categories})
+  res.render(`all-categories`, {categories});
 });
 
 myRoutes.get(`/comments`, async (req, res) => {

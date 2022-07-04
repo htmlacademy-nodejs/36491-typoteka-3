@@ -50,8 +50,10 @@ describe(`API returns an articles with given id`, () => {
 
 describe(`API creates an offer if data is valid`, () => {
   const newArticle = {
+    picture: ``,
+    createdDate: `20.12.2000`,
     title: `TEST Обзор новейшего смартфона`,
-    categories: `Программирование`,
+    category: `Программирование`,
     announce: `TEST Простые ежедневные упражнения помогут достичь успеха. Иг`,
     fullText: `TEST Первая большая ёлка была установлена только в 1938 году. Программировать не настолько сложно как об этом говорят.`,
   };
@@ -78,8 +80,10 @@ describe(`API creates an offer if data is valid`, () => {
 
 describe(`API refuses to create an article if data is invalid`, () => {
   const newArticle = {
+    picture: ``,
+    createdDate: `20.12.2000`,
     title: `TEST Обзор новейшего смартфона`,
-    categories: `Программирование`,
+    category: `Программирование`,
     announce: `TEST Простые ежедневные упражнения помогут достичь успеха. Иг`,
     fullText: `TEST Первая большая ёлка была установлена только в 1938 году. Программировать не настолько сложно как об этом говорят.`,
   };
@@ -104,8 +108,10 @@ describe(`API refuses to create an article if data is invalid`, () => {
 
 describe(`API changes existent article`, () => {
   const newArticle = {
+    picture: ``,
+    createdDate: `20.12.2000`,
     title: `TEST Обзор новейшего смартфона`,
-    categories: `Программирование`,
+    category: `Программирование`,
     announce: `TEST Простые ежедневные упражнения помогут достичь успеха. Иг`,
     fullText: `TEST Первая большая ёлка была установлена только в 1938 году. Программировать не настолько сложно как об этом говорят.`,
   };

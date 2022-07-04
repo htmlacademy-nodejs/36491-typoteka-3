@@ -1,7 +1,6 @@
 'use strict';
 
 const {nanoid} = require(`nanoid`);
-const dayjs = require(`dayjs`);
 const {MAX_ID_LENGTH} = require(`../../consts`);
 
 class ArticlesService {
@@ -11,7 +10,7 @@ class ArticlesService {
 
   create(article) {
     const newArticle = Object
-      .assign({id: nanoid(MAX_ID_LENGTH), comments: [], createdDate: dayjs(new Date()).format(`YYYY-MM-DD hh:mm:ss`)}, article);
+      .assign({id: nanoid(MAX_ID_LENGTH), comments: []}, article);
 
     this._articles.push(newArticle);
     return newArticle;

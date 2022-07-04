@@ -1,26 +1,25 @@
-extends layout.pug
+extends ./layout.pug
 
 block content
   main
     section.search-page
-      .search-page__wrapper
+      .search-page__wrapper(class=(results && results.length === 0 ? `search-page__wrapper--empty` : ``))
         h1 Поиск
         .search.search-page__form
-          form(action='#' method='get')
+          form(action="/search", method="GET" enctype="multipart/form-data" autocomplete="off")
             label
-              input(type='text' name='query' placeholder='Что ищем?' value='Путешествия')
-            button.search__button.button.button--transparent(type='submit') Найти
-          .search__result
-            time.search__date(datetime='2019-03-21T20:33') 21.03.2019, 20:33
-            a.search__link
-              | Huawei открыла в России
-              b путешествия
-              |  на смартфон Mate 30 Pro без сервисов
-              |                 Google
-          .search__result
-            time.search__date(datetime='2019-03-21T20:33') 21.03.2019, 20:33
-            a.search__link
-              | «Яндекс.Метрика» запустила
-              b путешествия
-              |  сервис для оценки эффективности
-              |                 баннеров и видеорекламы в реальном времени
+              input(type="text", name="search", placeholder="Что ищем?" value=(searchText || ``))
+            button.search__button.button.button--transparent(type="submit") Найти
+
+          if results && results.length > 0
+            each article in results
+              .search__result
+                time.search__date(datetime='#{article.createdDate}')
+                  +date(article.createdDate)
+                a.search__link(href=`/articles/${article.id}`)
+                  | #{article.title.split(search)[0]}
+                  b #{search}
+                  | #{article.title.split(search)[1]}
+
+        if results && results.length === 0
+          p.search-page__empty Ничего не нашлось
