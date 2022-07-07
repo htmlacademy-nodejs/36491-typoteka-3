@@ -3,28 +3,37 @@
 const {nanoid} = require(`nanoid`);
 const dayjs = require(`dayjs`);
 const {MAX_ID_LENGTH} = require(`../../consts`);
+const {DATE_FORMAT} = require(`../../consts`);
 
 class ArticlesService {
   constructor(articles) {
     this._articles = articles;
   }
 
+
   create(article) {
-    const newArticle = Object
-      .assign({id: nanoid(MAX_ID_LENGTH), comments: [], createdDate: dayjs(new Date()).format(`YYYY-MM-DD hh:mm:ss`)}, article);
+    const newArticle = {
+      ...article,
+      id: nanoid(MAX_ID_LENGTH),
+      comments: [],
+      createdDate: dayjs(new Date()).format(DATE_FORMAT),
+    };
 
     this._articles.push(newArticle);
     return newArticle;
   }
 
   drop(id) {
-    const article = this._articles.find((item) => item.id === id);
+    let article = null;
 
-    if (!article) {
-      return null;
-    }
+    this._articles = this._articles.filter((item) => {
+      if (item.id === id) {
+        article = item;
+      }
 
-    this._articles = this._articles.filter((item) => item.id !== id);
+      return item.id !== id;
+    });
+
     return article;
   }
 
@@ -37,10 +46,7 @@ class ArticlesService {
   }
 
   update(id, article) {
-    const oldArticle = this._articles
-      .find((item) => item.id === id);
-
-    return Object.assign(oldArticle, article);
+    return this._articles.map((item) => item.id === id ? article : item);
   }
 }
 
