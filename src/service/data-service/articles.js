@@ -45,7 +45,18 @@ class ArticlesService {
   }
 
   update(id, article) {
-    return this._articles.map((item) => item.id === id ? article : item);
+    let newArticle = null;
+
+    this._articles = this._articles.map((item) => {
+      if (item.id === id) {
+        newArticle = {...item, ...article};
+        return newArticle;
+      }
+
+      return item;
+    });
+
+    return newArticle;
   }
 }
 
