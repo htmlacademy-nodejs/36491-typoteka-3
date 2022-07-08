@@ -8,6 +8,7 @@ const DEFAULT_COUNT = 1;
 const MAX_COUNT = 1000;
 const MAX_COMMENTS = 4;
 const DEFAULT_PORT = 3000;
+const DATE_FORMAT = `YYYY-MM-DD hh:mm:ss`;
 
 module.exports = {
   MAX_ID_LENGTH,
@@ -17,7 +18,8 @@ module.exports = {
   MAX_COMMENTS,
   API_PREFIX,
   DEFAULT_PORT,
-  FILE_MOCKS_PATH
+  FILE_MOCKS_PATH,
+  DATE_FORMAT,
 };
 
 module.exports.FilePath = {
