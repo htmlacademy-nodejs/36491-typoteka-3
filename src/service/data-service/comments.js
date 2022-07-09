@@ -39,7 +39,6 @@ class CommentsService {
 
     return {article, comment};
   }
-
 }
 
 module.exports = {

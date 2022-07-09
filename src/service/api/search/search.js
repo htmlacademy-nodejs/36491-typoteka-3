@@ -1,11 +1,10 @@
 'use strict';
 
 const {Router} = require(`express`);
-const {HttpCode} = require(`../../consts`);
-
-const route = new Router();
+const {HttpCode} = require(`../../../consts`);
 
 module.exports = (app, searchService) => {
+  const route = new Router();
   app.use(`/search`, route);
 
   route.get(`/`, (req, res) => {
