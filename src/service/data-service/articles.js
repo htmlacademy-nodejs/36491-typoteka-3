@@ -9,21 +9,27 @@ class ArticlesService {
   }
 
   create(article) {
-    const newArticle = Object
-      .assign({id: nanoid(MAX_ID_LENGTH), comments: []}, article);
+    const newArticle = {
+      ...article,
+      id: nanoid(MAX_ID_LENGTH),
+      comments: [],
+    };
 
     this._articles.push(newArticle);
     return newArticle;
   }
 
   drop(id) {
-    const article = this._articles.find((item) => item.id === id);
+    let article = null;
 
-    if (!article) {
-      return null;
-    }
+    this._articles = this._articles.filter((item) => {
+      if (item.id === id) {
+        article = item;
+      }
 
-    this._articles = this._articles.filter((item) => item.id !== id);
+      return item.id !== id;
+    });
+
     return article;
   }
 
@@ -36,9 +42,18 @@ class ArticlesService {
   }
 
   update(id, article) {
-    const oldArticle = this._articles
-      .find((item) => item.id === id);
-    return Object.assign(oldArticle, article);
+    let newArticle = null;
+
+    this._articles = this._articles.map((item) => {
+      if (item.id === id) {
+        newArticle = {...item, ...article};
+        return newArticle;
+      }
+
+      return item;
+    });
+
+    return newArticle;
   }
 }
 
