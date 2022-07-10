@@ -13,3 +13,4 @@ node_modules/
 
 # Директория с собранными файлами проекта
 build/
+src/express/upload/img/*.*

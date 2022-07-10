@@ -1,9 +1,7 @@
 'use strict';
 
 const {nanoid} = require(`nanoid`);
-const dayjs = require(`dayjs`);
 const {MAX_ID_LENGTH} = require(`../../consts`);
-const {DATE_FORMAT} = require(`../../consts`);
 
 class ArticlesService {
   constructor(articles) {
@@ -15,7 +13,6 @@ class ArticlesService {
       ...article,
       id: nanoid(MAX_ID_LENGTH),
       comments: [],
-      createdDate: dayjs(new Date()).format(DATE_FORMAT),
     };
 
     this._articles.push(newArticle);
