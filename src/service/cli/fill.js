@@ -68,9 +68,8 @@ module.exports = {
     const [count] = args;
     const countArticle = Number.parseInt(count, 10) || DEFAULT_COUNT;
 
-    if (countArticle <= MAX_COUNT) {
-      try {
-        const articles = JSON.stringify(generateArticles(countArticle, titles, categories.length, users.length, sentences, commentSentences));
+      // try {
+        const articles = generateArticles(countArticle, titles, categories.length, users.length, sentences, commentSentences);
         const comments = articles.flatMap((article) => article.comments);
         const articleCategories = articles.map((article, index) => ({
           articleId: index + 1,
@@ -84,11 +83,10 @@ module.exports = {
           userId: index + 1,
           articleId: article.userId
         }));
-        const userComments = users.map((user, index) => ({
+        const userComments = comments.map((comment, index) => ({
           userId: index + 1,
-          commentId: user.comments[0].userId
+          commentId: comment.userId
         }));
-
         const userValues = users.map(
           ({email, passwordHash, firstName, lastName, avatar, role}) =>
             `('${email}', '${passwordHash}', '${firstName}', '${lastName}', '${avatar}', '${role}')`
@@ -149,13 +147,9 @@ module.exports = {
 
         await fs.writeFile(FILE_NAME, content);
         console.info(chalk.green(`Operation success. File created.`));
-      } catch (err) {
-        console.info(chalk.red(`Can't write data to file...`));
-        process.exit(ExitCode.error);
-      }
-    } else {
-      console.info(chalk.red(`Не больше 1000 публикаций`));
-      process.exit(ExitCode.error);
-    }
+      // } catch (err) {
+      //   console.info(chalk.red(`Can't write data to file...`));
+      //   process.exit(ExitCode.error);
+      // }
   }
 };
