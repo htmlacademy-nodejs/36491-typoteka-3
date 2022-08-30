@@ -1,13 +1,20 @@
 'use strict';
 
 const sequelize = require(`../lib/sequelize`);
-const defineModels = require(`../models`);
-const Aliase = require(`../models/aliase`);
+const initDatabase = require(`../lib/init-db`);
 const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
 const {getRandomInt, shuffle} = require(`../../utils`);
 const {getLogger} = require(`../lib/logger`);
-const {ExitCode, MAX_TITLE_COUNT, MAX_ANNOUNCE_COUNT, MAX_TEXT_COUNT, FilePath, MAX_COMMENTS, DEFAULT_COUNT, PictureRestrict} = require(`../../consts`);
+const {
+  MAX_TITLE_COUNT,
+  MAX_ANNOUNCE_COUNT,
+  MAX_TEXT_COUNT,
+  FilePath,
+  MAX_COMMENTS,
+  DEFAULT_COUNT,
+  PictureRestrict
+} = require(`../../consts`);
 
 const logger = getLogger({name: `api`});
 
@@ -64,31 +71,15 @@ module.exports = {
     }
     logger.info(`Connection to database established`);
 
-    const {Category, Article} = defineModels(sequelize);
-    await sequelize.sync({force: true});
-
     const sentences = await readContent(FilePath.SENTENCES);
     const titles = await readContent(FilePath.TITLES);
     const categories = await readContent(FilePath.CATEGORIES);
     const comments = await readContent(FilePath.COMMENTS);
 
-    const categoryModels = await Category.bulkCreate(
-      categories.map((item) => ({name: item}))
-    );
-
     const [count] = args;
     const countArticle = Number.parseInt(count, 10) || DEFAULT_COUNT;
+    const articles = generateArticles(countArticle, titles, categories, sentences, comments);
 
-    const articles = generateArticles(countArticle, titles, categoryModels, sentences, comments);
-    const articlePromises = articles.map(async (article) => {
-      const articleModel = await Article.create(article, {include: [Aliase.COMMENTS]});
-      await articleModel.addCategories(article.categories);
-    });
-    await Promise.all(articlePromises)
-      .catch((err) => {
-        logger.error(`An error occurred: ${err.message}`);
-        console.info(chalk.red(err.message));
-        process.exit(ExitCode.error);
-      });
+    return initDatabase(sequelize, {articles, categories});
   }
 };

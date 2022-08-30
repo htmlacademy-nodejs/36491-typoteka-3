@@ -37,8 +37,8 @@ class API {
       .then((res) => res.reduce((allComments, item) => [...allComments, ...item.comments], []));
   }
 
-  async getCategories() {
-    return await this._load(`/categories`);
+  async getCategories(count) {
+    return await this._load(`/categories`, {params: {count}});
   }
 
   async createArticle(data) {

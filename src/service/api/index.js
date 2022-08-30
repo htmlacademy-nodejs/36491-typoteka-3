@@ -6,11 +6,11 @@ const sequelize = require(`../lib/sequelize`);
 const defineModels = require(`../models`);
 
 const articles = require(`./articles/articles`);
-const categories = require(`./categories/categories`);
+const category = require(`./category/category`);
 
 const search = require(`./search/search`);
 const {ArticlesService} = require(`../data-service/articles`);
-const {CategoryService} = require(`../data-service/categories`);
+const {CategoryService} = require(`../data-service/category`);
 const {CommentsService} = require(`../data-service/comments`);
 const {SearchService} = require(`../data-service/search`);
 
@@ -20,7 +20,7 @@ defineModels(sequelize);
 
 (async () => {
   articles(app, new ArticlesService(sequelize), new CommentsService(sequelize));
-  categories(app, new CategoryService(sequelize));
+  category(app, new CategoryService(sequelize));
   search(app, new SearchService(sequelize));
 })();
 
