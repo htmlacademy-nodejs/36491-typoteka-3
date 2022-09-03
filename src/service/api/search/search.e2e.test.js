@@ -18,7 +18,7 @@ app.use(express.json());
 
 beforeAll(async () => {
   await initDatabase(mockDB, {categories: mockCategories, articles: mockData});
-  search(app, new SearchService(mockData));
+  search(app, new SearchService(mockDB));
 });
 
 describe(`API returns article based on search query`, () => {
@@ -28,7 +28,7 @@ describe(`API returns article based on search query`, () => {
     response = await request(app)
       .get(`/search`)
       .query({
-        query: `Обзор новейшего смартфона`
+        q: `Обзор новейшего смартфона`
       });
   });
 
@@ -49,7 +49,7 @@ test(`API returns code 404 if nothing is found`, async () => {
   await request(app)
     .get(`/search`)
     .query({
-      query: `Продам свою душу`
+      q: `Продам свою душу`
     })
     .expect(HttpCode.NOT_FOUND);
 });

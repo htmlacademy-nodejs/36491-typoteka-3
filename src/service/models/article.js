@@ -7,15 +7,18 @@ class Article extends Model {}
 
 const define = (sequelize) => Article.init({
   title: {
-    type: DataTypes['STRING'](MAX_TITLE_COUNT),
+    // eslint-disable-next-line new-cap
+    type: DataTypes[`STRING`](MAX_TITLE_COUNT),
     allowNull: false
   },
   text: {
-    type: DataTypes['STRING'](MAX_TEXT_COUNT),
+    // eslint-disable-next-line new-cap
+    type: DataTypes[`STRING`](MAX_TEXT_COUNT),
     allowNull: false
   },
   announcement: {
-    type: DataTypes['STRING'](MAX_ANNOUNCE_COUNT),
+    // eslint-disable-next-line new-cap
+    type: DataTypes[`STRING`](MAX_ANNOUNCE_COUNT),
     allowNull: false
   },
   photo: DataTypes.STRING,

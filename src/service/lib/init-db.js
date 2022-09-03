@@ -8,7 +8,7 @@ module.exports = async (sequelize, {categories, articles}) => {
   await sequelize.sync({force: true});
 
   const categoryModels = await Category.bulkCreate(
-    categories.map((item) => ({name: item}))
+      categories.map((item) => ({name: item}))
   );
 
   const categoryIdByName = categoryModels.reduce((acc, next) => ({
@@ -19,9 +19,9 @@ module.exports = async (sequelize, {categories, articles}) => {
   const articlePromises = articles.map(async (article) => {
     const articleModel = await Article.create(article, {include: [Aliase.COMMENTS]});
     await articleModel.addCategories(
-      article.categories.map(
-        (name) => categoryIdByName[name]
-      )
+        article.categories.map(
+            (name) => categoryIdByName[name]
+        )
     );
   });
 

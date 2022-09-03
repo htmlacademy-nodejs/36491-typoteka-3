@@ -28,6 +28,7 @@ class ArticlesService {
     const [affectedRows] = await this._Article.update(article, {
       where: {id}
     });
+
     return !!affectedRows;
   }
 
@@ -41,7 +42,7 @@ class ArticlesService {
     const article = await this._Article.findAll({
       include,
       order: [
-        [`createdAt`, `DESC`]
+        [`id`, `DESC`]
       ]
     });
 

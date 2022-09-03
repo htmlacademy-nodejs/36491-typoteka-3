@@ -5,17 +5,30 @@ class CommentsService {
     this._Comment = sequelize.models.Comment;
   }
 
-  create(articleId, comment) {
+  async create(articleId, comment) {
     return this._Comment.create({
       articleId,
       ...comment
     });
   }
 
-  async drop(id) {
-    const deletedRows = this._Comment.destroy({
-      where: {id}
+  async drop(articleId, commentId) {
+    const articleByUser = await this._Comment.findOne({
+      where: {
+        id: articleId,
+      }
     });
+
+    if (!articleByUser) {
+      return !!articleByUser;
+    }
+
+    const deletedRows = await this._Comment.destroy({
+      where: {
+        id: commentId
+      }
+    });
+
     return !!deletedRows;
   }
 

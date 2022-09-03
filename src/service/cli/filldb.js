@@ -34,9 +34,9 @@ const getRandomSubarray = (items) => {
   const result = [];
   while (count--) {
     result.push(
-      ...items.splice(
-        getRandomInt(0, items.length - 1), 1
-      )
+        ...items.splice(
+            getRandomInt(0, items.length - 1), 1
+        )
     );
   }
   return result;

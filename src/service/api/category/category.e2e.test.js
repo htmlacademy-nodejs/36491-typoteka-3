@@ -33,8 +33,8 @@ describe(`API returns category list`, () => {
   test(`Returns list of 4 categories`, () => expect(response.body.length).toBe(4));
 
   test(`Category names are "Программирование", "Без рамки", "За жизнь", "IT"`,
-    () => expect(response.body.map((it) => it.name)).toEqual(
-      expect.arrayContaining([`Программирование`, `Без рамки`, `За жизнь`, `IT`])
-    )
+      () => expect(response.body.map((it) => it.name)).toEqual(
+          expect.arrayContaining([`Программирование`, `Без рамки`, `За жизнь`, `IT`])
+      )
   );
 });

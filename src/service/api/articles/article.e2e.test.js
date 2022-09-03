@@ -46,43 +46,13 @@ describe(`API returns an articles with given id`, () => {
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 });
 
-describe(`API creates an article if data is valid`, () => {
-  const newArticle = {
-    photo: `123.jpg`,
-    title: `TEST Обзор новейшего смартфона`,
-    category: [1],
-    announcement: `TEST Простые ежедневные упражнения помогут достичь успеха. Иг`,
-    text: `TEST Первая большая ёлка была установлена только в 1938 году. Программировать не настолько сложно как об этом говорят.`,
-  };
-
-  let app;
-  let response;
-
-  beforeAll(async () => {
-    app = await createAPI();
-    response = await request(app)
-      .post(`/articles`)
-      .send(newArticle);
-  });
-
-  test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
-
-  test(`Returns article created`, () => expect(response.body).toEqual(expect.objectContaining(newArticle)));
-
-  test(`Articles count is changed`, () => request(app)
-    .get(`/articles`)
-    .expect((res) => expect(res.body.length).toBe(6))
-  );
-});
-
 describe(`API refuses to create an article if data is invalid`, () => {
   const newArticle = {
-    picture: ``,
-    createdDate: `20.12.2000`,
+    photo: ``,
     title: `TEST Обзор новейшего смартфона`,
     category: `Программирование`,
-    announce: `TEST Простые ежедневные упражнения помогут достичь успеха. Иг`,
-    fullText: `TEST Первая большая ёлка была установлена только в 1938 году. Программировать не настолько сложно как об этом говорят.`,
+    announcement: `TEST Простые ежедневные упражнения помогут достичь успеха. Иг`,
+    text: `TEST Первая большая ёлка была установлена только в 1938 году. Программировать не настолько сложно как об этом говорят.`,
   };
 
   let app;
@@ -107,7 +77,7 @@ describe(`API changes existent article`, () => {
   const newArticle = {
     photo: `321.jpg`,
     title: `TEST Обзор новейшего смартфона`,
-    category: [1],
+    categories: [1],
     announcement: `TEST TESTTESTTEST`,
     text: `TEST TESTTEST`,
   };
@@ -124,8 +94,6 @@ describe(`API changes existent article`, () => {
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Returns changed article`, () => expect(response.body).toEqual(expect.objectContaining(newArticle)));
-
   test(`Article is really changed`, () => request(app)
     .get(`/articles/1`)
     .expect((res) => expect(res.body.title).toBe(`TEST Обзор новейшего смартфона`))
@@ -137,29 +105,15 @@ test(`API returns status code 404 when trying to change non-existent article`, a
 
   const validArticle = {
     title: `TEST Обзор новейшего смартфона`,
-    categories: `Программирование`,
+    categories: [1],
     announcement: `TEST Простые ежедневные упражнения помогут достичь успеха. Иг`,
     text: `TEST Первая большая ёлка была установлена только в 1938 году. Программировать не настолько сложно как об этом говорят.`,
   };
 
   return request(app)
-    .put(`/articles/NOEXST`)
+    .put(`/articles/20`)
     .send(validArticle)
     .expect(HttpCode.NOT_FOUND);
-});
-
-test(`API returns status code 400 when trying to change an articles with invalid data`, async () => {
-  const app = await createAPI();
-
-  const invalidArticle = {
-    categories: [1],
-    announcement: `TEST Простые ежедневные упражнения помогут достичь успеха. Иг`,
-  };
-
-  return request(app)
-    .put(`/articles/1`)
-    .send(invalidArticle)
-    .expect(HttpCode.BAD_REQUEST);
 });
 
 describe(`API correctly deletes an article`, () => {
