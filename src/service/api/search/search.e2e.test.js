@@ -2,15 +2,24 @@
 
 const express = require(`express`);
 const request = require(`supertest`);
+const Sequelize = require(`sequelize`);
 
+const initDatabase = require(`../../lib/init-db`);
 const search = require(`./search`);
 const {SearchService} = require(`../../data-service/search`);
-const {mockData} = require(`./mockData`);
+
+const {mockData, mockCategories} = require(`./mockData`);
 const {HttpCode} = require(`../../../consts`);
+
+const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
 
 const app = express();
 app.use(express.json());
-search(app, new SearchService(mockData));
+
+beforeAll(async () => {
+  await initDatabase(mockDB, {categories: mockCategories, articles: mockData});
+  search(app, new SearchService(mockDB));
+});
 
 describe(`API returns article based on search query`, () => {
   let response;
@@ -19,7 +28,7 @@ describe(`API returns article based on search query`, () => {
     response = await request(app)
       .get(`/search`)
       .query({
-        query: `Обзор новейшего смартфона`
+        q: `Обзор новейшего смартфона`
       });
   });
 
@@ -31,8 +40,8 @@ describe(`API returns article based on search query`, () => {
     expect(response.body.length).toBe(1);
   });
 
-  test(`Article has correct id`, async () => {
-    expect(response.body[0].id).toBe(`ERJFu_`);
+  test(`Article has correct title`, async () => {
+    expect(response.body[0].title).toBe(`Обзор новейшего смартфона`);
   });
 });
 
@@ -40,7 +49,7 @@ test(`API returns code 404 if nothing is found`, async () => {
   await request(app)
     .get(`/search`)
     .query({
-      query: `Продам свою душу`
+      q: `Продам свою душу`
     })
     .expect(HttpCode.NOT_FOUND);
 });

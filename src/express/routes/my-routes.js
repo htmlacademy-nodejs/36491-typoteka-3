@@ -17,8 +17,8 @@ myRoutes.get(`/categories`, async (req, res) => {
 });
 
 myRoutes.get(`/comments`, async (req, res) => {
-  const comments = await api.getAllComments();
-  res.render(`comments`, {comments});
+  const articles = await api.getAllComments({comments: true});
+  res.render(`comments`, {articles: articles.slice(0, 3)});
 });
 
 module.exports = myRoutes;

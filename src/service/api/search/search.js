@@ -7,14 +7,14 @@ module.exports = (app, searchService) => {
   const route = new Router();
   app.use(`/search`, route);
 
-  route.get(`/`, (req, res) => {
-    const {query = ``} = req.query;
+  route.get(`/`, async (req, res) => {
+    const {q = ``} = req.query;
 
-    if (!query) {
+    if (!q) {
       return res.status(HttpCode.BAD_REQUEST).json([]);
     }
 
-    const foundArticles = searchService.findArticles(query);
+    const foundArticles = await searchService.findAll(q);
     const status = foundArticles.length > 0 ? HttpCode.OK : HttpCode.NOT_FOUND;
 
     return res.status(status).json(foundArticles);
