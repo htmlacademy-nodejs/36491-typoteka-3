@@ -20,6 +20,19 @@ class ArticlesService {
     return !!deletedRows;
   }
 
+  async findPage({limit, offset}) {
+    const {count, rows} = await this._Article.findAndCountAll({
+      limit,
+      offset,
+      include: [Aliase.CATEGORIES],
+      order: [
+        [`createdAt`, `DESC`]
+      ],
+      distinct: true
+    });
+    return {count, articles: rows};
+  }
+
   findOne(id) {
     return this._Article.findByPk(id, {include: [Aliase.CATEGORIES]});
   }

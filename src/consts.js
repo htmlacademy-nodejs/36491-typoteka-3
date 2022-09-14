@@ -16,6 +16,7 @@ const PictureRestrict = {
   MIN: 1,
   MAX: 16,
 };
+const ARTICLES_PER_PAGE = 8;
 
 module.exports = {
   MAX_ID_LENGTH,
@@ -30,6 +31,7 @@ module.exports = {
   DEFAULT_PORT,
   FILE_MOCKS_PATH,
   DATE_FORMAT,
+  ARTICLES_PER_PAGE,
   PictureRestrict,
 };
 
